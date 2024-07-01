@@ -17,7 +17,7 @@ app.get("/api/hello", async (req, res) => {
   }
 
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-  console.log(req.ips);
+  console.log(req.ip);
 
   const geoData = await query("ip.json", ip[0] || ip);
   const currentWeatherData = await query("current.json", geoData?.city);
