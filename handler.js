@@ -26,12 +26,12 @@ const handler = async (req, res) => {
   switch (parsedUrl.pathname) {
     case "/api/hello":
       parsedUrl.query.visitor_name;
-      res.writeHead(200, { "Content-Type": "application/json" });
       if (parsedUrl.query.visitor_name) {
         try {
           const geoData = await query("ip.json", client_ip);
           const currentWeatherData = await query("current.json", geoData?.city);
 
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({
               greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}`,
@@ -40,9 +40,8 @@ const handler = async (req, res) => {
               client_ip,
             })
           );
-          console.log("response sent");
         } catch (error) {
-          console.log("error", error);
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({
               error: "error processing this the request. pls try again later",
@@ -52,9 +51,10 @@ const handler = async (req, res) => {
           );
         }
       } else {
+        res.writeHead(200, { "Content-Type": "application/json" });
         res.write(JSON.stringify(getErrorResponse(req)));
       }
-      console.log("done");
+
       break;
     default:
       res.writeHead(404, { "Content-Type": "application/json" });
