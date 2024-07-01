@@ -18,7 +18,7 @@ function getErrorResponse(req) {
 const handler = async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
 
-  const clien_ip =
+  const client_ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket?.remoteAddress ||
     null;
@@ -29,16 +29,20 @@ const handler = async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       if (parsedUrl.query.visitor_name) {
         try {
-          const data = await query("ip.json", clien_ip);
+          console.log("client_ip", client_ip);
+          console.log("sending request to api");
+          const data = await query("ip.json", client_ip);
 
+          console.log("data", data);
           res.write(
             JSON.stringify({
               greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${data?.current?.temp_c} degrees Celsius in ${data?.location?.name}`,
               succcess: true,
               code: 200,
-              clien_ip,
+              client_ip,
             })
           );
+          console.log("response sent");
         } catch (error) {
           res.write(
             JSON.stringify({
@@ -51,7 +55,7 @@ const handler = async (req, res) => {
       } else {
         res.write(JSON.stringify(getErrorResponse(req)));
       }
-
+      console.log("done");
       break;
     default:
       res.writeHead(404, { "Content-Type": "application/json" });
