@@ -30,11 +30,6 @@ const handler = async (req, res) => {
           const geoData = await query("ip.json", client_ip);
           const currentWeatherData = await query("current.json", geoData?.city);
 
-          console.log("geoData", geoData);
-          console.log("currentWeatherData", currentWeatherData);
-          console.log("parsedUrl.query.visitor_name", parsedUrl.query.visitor_name);
-          
-
           res.writeHead(200, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({
@@ -44,6 +39,7 @@ const handler = async (req, res) => {
               client_ip,
             })
           );
+          break;
         } catch (error) {
           res.writeHead(404, { "Content-Type": "application/json" });
           res.write(
@@ -53,12 +49,13 @@ const handler = async (req, res) => {
               code: 500,
             })
           );
+          break;
         }
       } else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.write(JSON.stringify(getErrorResponse(req)));
+        break;
       }
-      break;
     default:
       res.writeHead(404, { "Content-Type": "application/json" });
       res.write(JSON.stringify(getErrorResponse(req)));
