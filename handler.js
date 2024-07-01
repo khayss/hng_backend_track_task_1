@@ -10,7 +10,7 @@ function getErrorResponse(req) {
         (req.protocol || "http") +
         "://" +
         req.headers.host +
-        "/api/hello?vistor_name='yourname'",
+        "/api/hello?visitor_name='yourname'",
     },
   };
 }
@@ -25,15 +25,15 @@ const handler = async (req, res) => {
 
   switch (parsedUrl.pathname) {
     case "/api/hello":
-      parsedUrl.query.vistor_name;
+      parsedUrl.query.visitor_name;
       res.writeHead(200, { "Content-Type": "application/json" });
-      if (parsedUrl.query.vistor_name) {
+      if (parsedUrl.query.visitor_name) {
         try {
           const data = await query("ip.json", clien_ip);
 
           res.write(
             JSON.stringify({
-              greeting: `Hello,  ${parsedUrl.query.vistor_name}!, the temperature is ${data?.current?.temp_c} degrees Celsius in ${data?.location?.name}`,
+              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${data?.current?.temp_c} degrees Celsius in ${data?.location?.name}`,
               succcess: true,
               code: 200,
               clien_ip,
