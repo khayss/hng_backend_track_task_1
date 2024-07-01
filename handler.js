@@ -23,43 +23,48 @@ const handler = async (req, res) => {
     req.socket?.remoteAddress ||
     null;
 
-  switch (parsedUrl.pathname) {
-    case "/api/hello":
-      if (parsedUrl.query.visitor_name) {
-        try {
-          const geoData = await query("ip.json", client_ip);
-          const currentWeatherData = await query("current.json", geoData?.city);
+  if (parsedUrl.pathname === "/api/hello" && !parsedUrl.query.visitor_name) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.write(JSON.stringify(getErrorResponse(req)));
+    return;
+  } else if (
+    parsedUrl.pathname === "/api/hello" &&
+    parsedUrl.query.visitor_name
+  ) {
+    const { geoData, currentWeatherData } = await getData();
 
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.write(
-            JSON.stringify({
-              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}`,
-              succcess: true,
-              code: 200,
-              client_ip,
-            })
-          );
-          break;
-        } catch (error) {
-          res.writeHead(404, { "Content-Type": "application/json" });
-          res.write(
-            JSON.stringify({
-              error: "error processing this the request. pls try again later",
-              succcess: false,
-              code: 500,
-            })
-          );
-          break;
-        }
-      } else {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(getErrorResponse(req)));
-        break;
-      }
-    default:
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.write(JSON.stringify(getErrorResponse(req)));
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.write(
+      JSON.stringify({
+        greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}`,
+        succcess: true,
+        code: 200,
+        client_ip,
+      })
+    );
+    return;
+  } else {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.write(JSON.stringify(getErrorResponse(req)));
+    return;
   }
 };
 
 export default handler;
+
+async function getData() {
+  try {
+    const geoData = await query("ip.json", client_ip);
+    const currentWeatherData = await query("current.json", geoData?.city);
+
+    return {
+      geoData,
+      currentWeatherData,
+    };
+  } catch (error) {
+    return {
+      geoData: null,
+      currentWeatherData: null,
+    };
+  }
+}
