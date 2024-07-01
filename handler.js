@@ -1,4 +1,5 @@
 import url from "url";
+import query from "./api";
 function getErrorResponse(req) {
   return {
     message: "Not Found",
@@ -14,7 +15,7 @@ function getErrorResponse(req) {
   };
 }
 
-const handler = (req, res) => {
+const handler = async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
 
   const clien_ip =
@@ -26,18 +27,31 @@ const handler = (req, res) => {
     case "/api/hello":
       parsedUrl.query.vistor_name;
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.write(
-        JSON.stringify(
-          parsedUrl.query.vistor_name
-            ? {
-                greeting: "Hello, " + parsedUrl.query.vistor_name,
-                succcess: true,
-                code: 200,
-                clien_ip,
-              }
-            : getErrorResponse(req)
-        )
-      );
+      if (parsedUrl.query.vistor_name) {
+        try {
+          const data = await query("ip.json", clien_ip);
+
+          res.write(
+            JSON.stringify({
+              greeting: `Hello,  ${parsedUrl.query.vistor_name}!, the temperature is ${data?.current?.temp_c} degrees Celsius in ${data?.location?.name}`,
+              succcess: true,
+              code: 200,
+              clien_ip,
+            })
+          );
+        } catch (error) {
+          res.write(
+            JSON.stringify({
+              error: "error processing this the request. pls try again later",
+              succcess: false,
+              code: 500,
+            })
+          );
+        }
+      } else {
+        res.write(JSON.stringify(getErrorResponse(req)));
+      }
+
       break;
     default:
       res.writeHead(404, { "Content-Type": "application/json" });
