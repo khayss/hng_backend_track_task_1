@@ -25,7 +25,6 @@ const handler = async (req, res) => {
 
   switch (parsedUrl.pathname) {
     case "/api/hello":
-      parsedUrl.query.visitor_name;
       if (parsedUrl.query.visitor_name) {
         try {
           const geoData = await query("ip.json", client_ip);
@@ -41,7 +40,7 @@ const handler = async (req, res) => {
             })
           );
         } catch (error) {
-          res.writeHead(200, { "Content-Type": "application/json" });
+          res.writeHead(404, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({
               error: "error processing this the request. pls try again later",
@@ -51,10 +50,9 @@ const handler = async (req, res) => {
           );
         }
       } else {
-        res.writeHead(200, { "Content-Type": "application/json" });
+        res.writeHead(404, { "Content-Type": "application/json" });
         res.write(JSON.stringify(getErrorResponse(req)));
       }
-
       break;
     default:
       res.writeHead(404, { "Content-Type": "application/json" });
