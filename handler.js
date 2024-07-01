@@ -30,6 +30,11 @@ const handler = async (req, res) => {
           const geoData = await query("ip.json", client_ip);
           const currentWeatherData = await query("current.json", geoData?.city);
 
+          console.log("geoData", geoData);
+          console.log("currentWeatherData", currentWeatherData);
+          console.log("parsedUrl.query.visitor_name", parsedUrl.query.visitor_name);
+          
+
           res.writeHead(200, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({
