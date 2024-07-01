@@ -22,12 +22,9 @@ app.get("/api/hello", async (req, res) => {
   const geoData = await query("ip.json", client_ip || ip);
   const currentWeatherData = await query("current.json", geoData?.city);
 
-  console.log("geoData", geoData);
-  console.log(currentWeatherData);
-
   res.status(200).json({
     success: true,
-    greeting: `Hello, ${visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}.`,
+    greeting: `Hello, ${visitor_name}!, the temperature is ${currentWeatherData?.current?.temp_c} degrees Celsius in ${geoData?.city}.`,
     location: geoData?.city,
     client_ip: client_ip || ip,
   });
