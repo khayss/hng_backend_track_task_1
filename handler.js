@@ -32,7 +32,6 @@ const handler = async (req, res) => {
           const geoData = await query("ip.json", client_ip);
           const currentWeatherData = await query("current.json", geoData?.city);
 
-          console.log("data", data);
           res.write(
             JSON.stringify({
               greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}`,
