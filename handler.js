@@ -29,15 +29,13 @@ const handler = async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       if (parsedUrl.query.visitor_name) {
         try {
-          console.log("client_ip", client_ip);
-          console.log("sending request to api");
           const geoData = await query("ip.json", client_ip);
           const currentWeatherData = await query("current.json", geoData?.city);
 
           console.log("data", data);
           res.write(
             JSON.stringify({
-              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.current?.temp_c} degrees Celsius in ${geoData?.city}`,
+              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}`,
               succcess: true,
               code: 200,
               client_ip,
@@ -45,6 +43,7 @@ const handler = async (req, res) => {
           );
           console.log("response sent");
         } catch (error) {
+          console.log("error", error);
           res.write(
             JSON.stringify({
               error: "error processing this the request. pls try again later",
