@@ -1,14 +1,41 @@
 import "dotenv/config";
-import http from "http";
-import handler from "./handler.js";
+import express from "express";
+import query from "./api.js";
 
 const port = process.env.PORT || 8080;
 
-const server = http.createServer((req, res) => {
-  handler(req, res);
-  res.end();
+const app = express();
+
+app.get("/api/hello", async (req, res) => {
+  const { visitor_name } = req.query;
+
+  if (!visitor_name) {
+    res.status(400).json({
+      error: "Missing required parameter 'visitor_name' in query",
+      success: false,
+    });
+  }
+
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  console.log(ip);
+
+  const geoData = await query("ip.json", ip);
+  const currentWeatherData = await query("current.json", geoData?.city);
+
+  res.status(200).json({
+    success: true,
+    greeting: `Hello, ${visitor_name}!, the temperature is ${currentWeatherData?.temp_c} degrees Celsius in ${geoData?.city}.`,
+    location: geoData?.city,
+    client_ip: ip,
+  });
+});
+app.use("*", (req, res) => {
+  res.status(404).json({
+    error: "Route not found",
+    success: false,
+  });
 });
 
-server.listen(port, () => {
-  console.log("Server running on port: " + port);
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
