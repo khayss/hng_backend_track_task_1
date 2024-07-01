@@ -1,5 +1,5 @@
 import url from "url";
-import query from "./api";
+import query from "./api.js";
 function getErrorResponse(req) {
   return {
     message: "Not Found",
