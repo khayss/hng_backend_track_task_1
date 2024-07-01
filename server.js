@@ -22,7 +22,7 @@ app.get("/api/hello", async (req, res) => {
   const geoData = await query("ip.json", client_ip || ip);
   const currentWeatherData = await query("current.json", geoData?.city);
 
-  log("geoData", geoData);
+  console.log("geoData", geoData);
   console.log(currentWeatherData);
 
   res.status(200).json({
