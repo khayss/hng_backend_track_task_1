@@ -31,12 +31,13 @@ const handler = async (req, res) => {
         try {
           console.log("client_ip", client_ip);
           console.log("sending request to api");
-          const data = await query("ip.json", client_ip);
+          const geoData = await query("ip.json", client_ip);
+          const currentWeatherData = await query("current.json", geoData?.city);
 
           console.log("data", data);
           res.write(
             JSON.stringify({
-              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${data?.current?.temp_c} degrees Celsius in ${data?.location?.name}`,
+              greeting: `Hello,  ${parsedUrl.query.visitor_name}!, the temperature is ${currentWeatherData?.current?.temp_c} degrees Celsius in ${geoData?.city}`,
               succcess: true,
               code: 200,
               client_ip,
