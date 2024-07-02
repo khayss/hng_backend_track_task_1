@@ -12,7 +12,6 @@ app.get("/api/hello", async (req, res) => {
   if (!visitor_name) {
     res.status(400).json({
       error: "Missing required parameter 'visitor_name' in query",
-      success: false,
     });
   }
 
@@ -23,7 +22,6 @@ app.get("/api/hello", async (req, res) => {
   const currentWeatherData = await query("current.json", geoData?.city);
 
   res.status(200).json({
-    success: true,
     greeting: `Hello, ${visitor_name}!, the temperature is ${currentWeatherData?.current?.temp_c} degrees Celsius in ${geoData?.city}.`,
     location: geoData?.city,
     client_ip: client_ip || ip,
@@ -32,7 +30,6 @@ app.get("/api/hello", async (req, res) => {
 app.use("*", (req, res) => {
   res.status(404).json({
     error: "Route not found",
-    success: false,
   });
 });
 
